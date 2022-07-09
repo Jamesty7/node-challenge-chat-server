@@ -33,14 +33,14 @@ app.get("/", function (request, response) {
   response.sendFile(__dirname + "/index.html");
 });
 
-app.get("/messages", function(request, response) {
+app.get("/messages", function (request, response) {
   response.send(messages)
 });
 
-app.get('/messages/:id', function(request, response) {
+app.get('/messages/:id', function (request, response) {
   const requestedMessageId = request.params.id
 
-  const message = messages.find( (entry) => {
+  const message = messages.find((entry) => {
     if (entry.id == requestedMessageId) {
       return true
     } else {
@@ -55,34 +55,40 @@ app.get('/messages/:id', function(request, response) {
 });
 
 app.post('/messages', (req, res) => {
- 
-  newMessageId = newMessageId + 1
   const newMessage = req.body;
 
-  newMessage.id = newMessageId
+  if (newMessage.text && newMessage.from) {
+    newMessageId = newMessageId + 1
+    newMessage.id = newMessageId
+    console.log(newMessage)
 
-  console.log(newMessage)
-  messages.push(newMessage)
 
-  res.send('Message is added to the database');
+    messages.push(newMessage)
+
+    res.send('Message is added to the database');
+  } else {
+    res.status(400).send('Invalid Parameter');
+  }
 });
 
 
 app.delete('/messages/:id', (req, res) => {
-  
+
   const messageId = req.params.id;
 
   // Remove message
   messages = messages.filter(i => {
-      if (i.id != messageId) {
-          return true;
-      }
-      return false;
+    if (i.id != messageId) {
+      return true;
+    }
+    return false;
   });
 
   res.send('Message is deleted');
 });
 
 app.listen(3000, () => {
-   console.log("Listening on port 3000")
-  });
+  console.log("Listening on port 3000")
+});
+
+
